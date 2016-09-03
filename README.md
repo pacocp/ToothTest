@@ -25,4 +25,6 @@ $ python3 toothtest.py
 ```
 ## Author
 
-Francisco Carrillo Pérez <franciscocp@correo.ugr.es>
+Francisco Carrillo Pérez
+
+< franciscocp@correo.ugr.es >
