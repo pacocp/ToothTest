@@ -1,6 +1,6 @@
 ![Logo](https://github.com/pacocp/ToothTest/blob/master/Logo/logo.png)
 ============================
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ##About the project
 
