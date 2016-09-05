@@ -35,7 +35,7 @@ class MainWindow():
         self.f = open("ObserversEvaluations/observer"+str(number_of_observer)+".txt",'w+')
         self.f.write(description)
         self.f.write("\n\n")
-        self.f.write("\nThe order of the results is as follows: Numberofthesample Perceptibility Acceptability Scale\n\n")
+        self.f.write("\nThe order of the results is as follows: Perceptibility Acceptability Scale\n\n")
         self.number_of_observer = str(number_of_observer)
         screen_width = main.winfo_screenwidth()
         screen_height = main.winfo_screenheight()
@@ -51,6 +51,7 @@ class MainWindow():
         # images
         self.my_images = []
         i = 0
+        #change the number in range and the name depend on your necesities
         for i in range(1,180):
             self.my_images.append(PhotoImage(file = "Samples/muestra"+str(i)+".png"))
 
@@ -304,7 +305,7 @@ class MainWindow():
         #Close button
         """Writes the results in a file"""
         for i in range(0,180):
-            self.f.write("Sample nº"+str(i+1)+": "+str(self.matrix[i][0])+" "+str(self.matrix[i][1])+" "+str(self.matrix[i][2])+"\n")
+            self.f.write(str(self.matrix[i][0])+" "+str(self.matrix[i][1])+" "+str(self.matrix[i][2])+"\n")
         self.f.close()
         self.v.quit()
 
@@ -451,9 +452,10 @@ v.main()
 b.main()
 description = v.getDescription()
 number_of_observer = 0
-with open("observers.txt") as f:
-        for i, l in enumerate(f):
-            number_of_observer = number_of_observer + 1
+"""This is going to check the number of files in the Observers Evaluation folder
+so it can select the number of the next observer"""
+while os.path.exists("ObserversEvaluations/observer"+str(number_of_observer)+".txt"):
+    number_of_observer = number_of_observer + 1
 with open("observers.txt", "a") as observers:
     observers.write(description+"\n")
 root = Toplevel()
