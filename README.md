@@ -23,6 +23,8 @@ $ git clone git@github.com:pacocp/ToothTest.git
 $ python3 toothtest.py
 
 ```
+
+Also, you can check the wiki just in the top bar for a better explanation.
 ## Author
 
 Francisco Carrillo Pérez
