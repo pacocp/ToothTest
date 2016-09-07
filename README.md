@@ -27,6 +27,6 @@ $ python3 toothtest.py
 Also, you can check the wiki just in the top bar for a better explanation.
 ## Author
 
-Francisco Carrillo Pérez
+**Francisco Carrillo Pérez**
 
-< franciscocp@correo.ugr.es >
+**< franciscocp@correo.ugr.es >** **< carrilloperezfrancisco@gmail.com >**
