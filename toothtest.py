@@ -24,13 +24,13 @@ class MainWindow():
 
     #----------------
 
-    def __init__(self, main,description,number_of_observer,v):
+    def __init__(self, main,description,number_of_observer,v,number_of_samples):
 
 
         #Initialize attributes
         self.v = v
         self.matrix = []
-        for i in range(0,180):
+        for i in range(0,number_of_samples):
             self.matrix.append([99,99,99])
         self.f = open("ObserversEvaluations/observer"+str(number_of_observer)+".txt",'w+')
         self.f.write(description)
@@ -52,14 +52,14 @@ class MainWindow():
         self.my_images = []
         i = 0
         #change the number in range and the name depend on your necesities
-        for i in range(1,180):
-            self.my_images.append(PhotoImage(file = "Samples/muestra"+str(i)+".png"))
+        for i in range(1,number_of_samples):
+            self.my_images.append(PhotoImage(file = "Samples/sample"+str(i)+".png"))
 
         self.my_image_number = 0
 
         #This is going to be used to show the images that have been showed
         self.vector_of_shown_images = []
-        for i in range(0,180):
+        for i in range(0,number_of_samples):
             self.vector_of_shown_images.append(0)
 
 
@@ -304,7 +304,7 @@ class MainWindow():
     def closeButton(self):
         #Close button
         """Writes the results in a file"""
-        for i in range(0,180):
+        for i in range(0,number_of_samples):
             self.f.write(str(self.matrix[i][0])+" "+str(self.matrix[i][1])+" "+str(self.matrix[i][2])+"\n")
         self.f.close()
         self.v.quit()
@@ -396,16 +396,24 @@ class almacen():
         self.E1 = Entry(self.entry, bd =5)
         self.label1.pack()
         self.E1.pack()
+        self.label2 = Label(self.entry, text="Number of Samples")
+        self.E2 = Entry(self.entry, bd =5)
+        self.label2.pack()
+        self.E2.pack()
         self.description = ""
+        self.number_of_samples = ""
         self.submit = Button(self.entry, text ="Submit", command = self.getDate)
         self.submit.pack(side=BOTTOM)
     def getDate(self):
         self.description = self.E1.get()
+        self.number_of_samples = self.E2.get()
         self.entry.quit()
     def main(self):
         self.entry.mainloop()
     def getDescription(self):
         return self.description
+    def getNumberOfSamples(self):
+        return int(self.number_of_samples)
     def quit(self):
         self.entry.destroy()
 
@@ -450,6 +458,7 @@ v = almacen()
 b = observers_window(observers_names)
 v.main()
 b.main()
+number_of_samples = v.getNumberOfSamples()
 description = v.getDescription()
 number_of_observer = 0
 """This is going to check the number of files in the Observers Evaluation folder
@@ -459,6 +468,6 @@ while os.path.exists("ObserversEvaluations/observer"+str(number_of_observer)+".t
 with open("observers.txt", "a") as observers:
     observers.write(description+"\n")
 root = Toplevel()
-MainWindow(root,description,number_of_observer,v)
+MainWindow(root,description,number_of_observer,v,number_of_samples)
 b.quit()
 root.mainloop()
