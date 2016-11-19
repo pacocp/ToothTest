@@ -1,6 +1,5 @@
 ![Logo](https://github.com/pacocp/ToothTest/blob/master/Logo/logo.png)
 ============================
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ##About the project
 
