@@ -14,7 +14,6 @@
 
 from sys import argv
 from sys import platform as _platform
-import numpy as np
 import subprocess
 import os
 import errno
