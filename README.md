@@ -1,12 +1,12 @@
 ![Logo](https://github.com/pacocp/ToothTest/blob/master/Logo/logo.png)
 ============================
 
-##About the project
+## About the project
 
 **ToothTest** is a Python's based script to make experiments about the evaluation of differences and similarities on different aspects
 of teeth.
 
-##Requirements
+## Requirements
 
 You'll need, in order to run this script:
 
@@ -25,7 +25,7 @@ $ python3 toothtest.py
 
 Also, you can check the wiki just in the top bar for a better explanation.
 
-##License
+## License
 
 **Apache 2.0**
 
