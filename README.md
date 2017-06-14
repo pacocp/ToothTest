@@ -13,6 +13,11 @@ You'll need, in order to run this script:
 - Python 3 or above: https://www.python.org/downloads/
 - Tkinter: http://www.tkdocs.com/tutorial/install.html
 
+Also, you can install the requirements with pip and the requirements.txt file:
+
+```
+pip install -r requirements.txt
+```
 ## How to use it
 
 You can read the documentation for an extense explanation, but a brief one:
