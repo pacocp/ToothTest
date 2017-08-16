@@ -31,6 +31,10 @@ $ python3 toothtest.py
 
 Also, you can check the wiki just in the top bar for a better explanation.
 
+## Problems
+
+All the features doesn't work in MacOS, so I recommend the use of the program
+in a Linux or a  Windows machine.
 ## License
 
 **Apache 2.0**
