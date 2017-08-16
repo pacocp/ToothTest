@@ -6,6 +6,7 @@
 **ToothTest** is a Python's based script to make experiments about the evaluation of differences and similarities on different aspects
 of teeth.
 
+![Program](https://github.com/pacocp/ToothTest/blob/master/images/toothtest.gif)
 ## Requirements
 
 You'll need, in order to run this script:
