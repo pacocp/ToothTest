@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/pacocp/ToothTest.svg?branch=master)](https://travis-ci.org/pacocp/ToothTest)
+
 ![Logo](https://github.com/pacocp/ToothTest/blob/master/Logo/logo.png)
 ============================
 
