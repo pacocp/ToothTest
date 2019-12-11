@@ -35,8 +35,31 @@ Also, you can check the wiki just in the top bar for a better explanation.
 
 ## Problems
 
-All the features doesn't work in MacOS, so I recommend the use of the program
-in a Linux or a  Windows machine.
+Not all features work in MacOS. Thefore I recommend the usage of the software in a Linux or Windows machine.
+
+## Citing
+
+If you find the software useful, please cite it as follows:
+
+```
+Pérez, M. M., Herrera, L. J., Carrillo, F., Pecho, O. E., Dudea, D., Gasparik, C., ... & Della Bona, A. (2019). Whiteness difference thresholds in dentistry. Dental Materials, 35(2), 292-297.
+```
+
+or in Bibtex: 
+
+```
+@article{perez2019whiteness,
+  title={Whiteness difference thresholds in dentistry},
+  author={P{\'e}rez, Mar{\'\i}a M and Herrera, Luis Javier and Carrillo, Francisco and Pecho, Oscar E and Dudea, Diana and Gasparik, Cristina and Ghinea, Razvan and Della Bona, Alvaro},
+  journal={Dental Materials},
+  volume={35},
+  number={2},
+  pages={292--297},
+  year={2019},
+  publisher={Elsevier}
+}
+
+```
 ## License
 
 **Apache 2.0**
