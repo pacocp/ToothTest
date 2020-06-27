@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 #----------------------------------------------------------------------
-# Francisco Carrillo Pérez <franciscocp@correo.ugr.es>
+# Francisco Carrillo Pérez <carrilloperezfrancisco@gmail.com>
 # https://github.com/pacocp
 #----------------------------------------------------------------------
 
@@ -17,6 +17,7 @@ from sys import platform as _platform
 import subprocess
 import os
 import errno
+from tkinter import filedialog
 from tkinter import *
 
 class MainWindow():
