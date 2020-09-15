@@ -62,10 +62,10 @@ or in Bibtex:
 ```
 ## License
 
-**Apache 2.0**
+**MIT License**
 
 ## Author
 
 **Francisco Carrillo Pérez**
 
-**< franciscocp@correo.ugr.es >** **< carrilloperezfrancisco@gmail.com >**
+**< franciscocp@ugr.es >** **< carrilloperezfrancisco@gmail.com >**
