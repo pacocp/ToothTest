@@ -30,7 +30,6 @@ class MainWindow():
 
 
         #Initialize attributes
-        print('reading images')
         self.v = v
         self.matrix = []
         for i in range(0,number_of_samples):
@@ -278,7 +277,33 @@ class MainWindow():
         # change image
         self.canvas.itemconfig(self.image_on_canvas, image = self.my_images[self.my_image_number])
 
-
+        # sunken the buttons previously selected
+        # perceptibility
+        if self.matrix[self.my_image_number][0] == 1:
+            self.button_yes_p.config(relief=SUNKEN)
+        elif self.matrix[self.my_image_number][0] == 0:
+            self.button_no_p.config(relief=SUNKEN)
+        
+        # acceptability
+        if self.matrix[self.my_image_number][1] == 1:
+            self.button_yes_ac.config(relief=SUNKEN)
+        elif self.matrix[self.my_image_number][1] == 0:
+            self.button_no_ac.config(relief=SUNKEN)
+        
+        # scale
+        if self.matrix[self.my_image_number][2] == 0:
+            self.button_scale_0.config(relief=SUNKEN)
+        elif self.matrix[self.my_image_number][2] == 1:
+            self.button_scale_1.config(relief=SUNKEN)
+        elif self.matrix[self.my_image_number][2] == 2:
+            self.button_scale_2.config(relief=SUNKEN)
+        elif self.matrix[self.my_image_number][2] == 3:
+            self.button_scale_3.config(relief=SUNKEN)
+        elif self.matrix[self.my_image_number][2] == 4:
+            self.button_scale_4.config(relief=SUNKEN)
+        elif self.matrix[self.my_image_number][2] == 5:
+            self.button_scale_5.config(relief=SUNKEN)
+    
      ###################################################################
      #
      # PERCEPTIBILITY
@@ -290,13 +315,20 @@ class MainWindow():
         self.matrix[self.my_image_number][0] = 1
         self.button_no_p.config(relief=RAISED)
         self.button_yes_p.config(relief=SUNKEN)
+        self.button_yes_ac.config(relief=RAISED)
+        self.button_scale_0.config(relief=RAISED)
+        self.button_scale_0['state'] = 'disabled'
 
     def noButton_P(self):
         self.matrix[self.my_image_number][0] = 0
         self.matrix[self.my_image_number][1] = 1
         self.matrix[self.my_image_number][2] = 0
+        self.button_scale_0['state'] = 'active'
         self.button_yes_p.config(relief=RAISED)
         self.button_no_p.config(relief=SUNKEN)
+        self.button_yes_ac.config(relief=SUNKEN)
+        self.button_scale_0.config(relief=SUNKEN)
+        
 
        ###################################################################
      #
