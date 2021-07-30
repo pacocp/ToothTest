@@ -80,7 +80,23 @@ class MainWindow():
         # set first image on canvas
         """ You can change the place of the images giving
         different values to the screen_width and screen_height """
-        self.image_on_canvas = self.canvas.create_image((screen_width/2)-100, screen_height/2, anchor = NW, image = self.my_images[self.my_image_number])
+        #self.image_on_canvas = self.canvas.create_image((screen_width/2)-100, screen_height/2, anchor = NW, image = self.my_images[self.my_image_number])
+        canvas = Canvas(root, width = 250, height = 250, bg='black')
+
+        #canvas.pack()
+
+        img = PhotoImage(file = r'assets/tooth1.png')
+        img2 = PhotoImage(file = r'assets/tooth2.png')
+        root.img = img
+        root.img2 = img2
+        canvas.create_rectangle(0, 0, 250/2, 250/2, fill='#fb0', outline='#fb0')
+        canvas.create_rectangle(250/2,0, 250, 250/2, fill='#fc0', outline='#fc0')
+        canvas.create_image((250/2)-100,40, anchor=NW, image=img)
+        canvas.create_image((250/2),40, anchor=NW, image=img2)
+
+        canvas.place(x=(screen_width/2)-100,y=screen_height/2)
+
+        #self.image_on_canvas = self.canvas.create_image((screen_width/2)-100, screen_height/2, anchor = NW, image = self.my_images[self.my_image_number])
         self.texto = self.canvas.create_text(80,50,font=("Purisa", 16),text = "Sample 1")
 
          # button to close
