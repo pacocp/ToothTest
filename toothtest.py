@@ -17,16 +17,18 @@ from sys import platform as _platform
 import subprocess
 import os
 import errno
-from tkinter import filedialog
 from tkinter import *
 from glob import glob
 import random
+from utils import *
+
 
 class MainWindow():
 
     #----------------
 
-    def __init__(self, main,description,number_of_observer,v,number_of_samples,shuffle,path):
+    def __init__(self, main, description, number_of_observer, v,
+                 number_of_samples, shuffle, path, file):
 
 
         #Initialize attributes
@@ -43,58 +45,62 @@ class MainWindow():
         screen_height = main.winfo_screenheight()
 
 
-        #Fullscreen
+        # Fullscreen
         main.attributes("-fullscreen", True)
 
-        # canvas for image
-        self.canvas = Canvas(main, width=screen_width, height=screen_height)
-        self.canvas.grid(row=screen_height, column=screen_width)
-        self.state = False
-        # images
         self.shuffle = shuffle
         self.number_of_samples = number_of_samples
-        self.path = path
-        self.my_images = []
-        images_list = sorted(glob(path+'/*.png'))
-        images_list = Tcl().call('lsort', '-dict', images_list)
-        
         if shuffle:
             self.list_numbers = list(range(0, number_of_samples))
             random.seed(50)
             self.list_numbers = random.sample(self.list_numbers, len(self.list_numbers))
-            images = [images_list[i] for i in self.list_numbers]
-            #images = images_list[self.list_numbers]
-        else:
-            images = images_list
-        for img in images:
-            self.my_images.append(PhotoImage(file = img))
-
-        self.my_image_number = 0
-
-        #This is going to be used to show the images that have been showed
+         # This is going to be used to show the images that have been showed
         self.vector_of_shown_images = []
         for i in range(0,number_of_samples):
             self.vector_of_shown_images.append(0)
+        if path != '':
+            # canvas for image
+            self.canvas = Canvas(main, width=screen_width, height=screen_height)
+            self.canvas.grid(row=screen_height, column=screen_width)
+            self.state = False
+            # images
+            self.path = path
+            self.my_images = []
+            images_list = sorted(glob(path+'/*.png'))
+            images_list = Tcl().call('lsort', '-dict', images_list)
+            
+            if shuffle:
+                images = [images_list[i] for i in self.list_numbers]
+            else:
+                images = images_list
 
+            for img in images:
+                self.my_images.append(PhotoImage(file = img))
 
-        # set first image on canvas
-        """ You can change the place of the images giving
-        different values to the screen_width and screen_height """
-        #self.image_on_canvas = self.canvas.create_image((screen_width/2)-100, screen_height/2, anchor = NW, image = self.my_images[self.my_image_number])
-        canvas = Canvas(root, width = 250, height = 250, bg='black')
+            self.my_image_number = 0
+            # set first image on canvas
+            """ You can change the place of the images giving
+            different values to the screen_width and screen_height """
+            self.image_on_canvas = self.canvas.create_image((screen_width/2)-100, screen_height/2, anchor = NW, image = self.my_images[self.my_image_number])
+        elif file != '':
+            canvas = Canvas(root, width = 250, height = 250, bg='black')
 
-        #canvas.pack()
+            #canvas.pack()
+            rgb1 = file.values[self.my_image_number, 0:3]
+            rgb2 = file.values[self.my_image_number, 3:-1]
+            hex1 = RGBtoHEX(rgb1[0], rgb1[1], rgb1[2])
+            hex2 = RGBtoHEX(rgb2[0], rgb2[1], rgb2[2])
 
-        img = PhotoImage(file = r'assets/tooth1.png')
-        img2 = PhotoImage(file = r'assets/tooth2.png')
-        root.img = img
-        root.img2 = img2
-        canvas.create_rectangle(0, 0, 250/2, 250/2, fill='#fb0', outline='#fb0')
-        canvas.create_rectangle(250/2,0, 250, 250/2, fill='#fc0', outline='#fc0')
-        canvas.create_image((250/2)-100,40, anchor=NW, image=img)
-        canvas.create_image((250/2),40, anchor=NW, image=img2)
+            img = PhotoImage(file = r'assets/tooth1.png')
+            img2 = PhotoImage(file = r'assets/tooth2.png')
+            root.img = img
+            root.img2 = img2
+            canvas.create_rectangle(0, 0, 250/2, 250/2, fill=hex1, outline=hex1)
+            canvas.create_rectangle(250/2, 0, 250, 250/2, fill=hex2, outline=hex2)
+            canvas.create_image((250/2)-100,40, anchor=NW, image=img)
+            canvas.create_image((250/2),40, anchor=NW, image=img2)
 
-        canvas.place(x=(screen_width/2)-100,y=screen_height/2)
+            canvas.place(x=(screen_width/2)-100,y=screen_height/2)
 
         #self.image_on_canvas = self.canvas.create_image((screen_width/2)-100, screen_height/2, anchor = NW, image = self.my_images[self.my_image_number])
         self.texto = self.canvas.create_text(80,50,font=("Purisa", 16),text = "Sample 1")
@@ -213,27 +219,11 @@ class MainWindow():
     def nextButton(self):
         #This is going to be used for debugging
         if self.matrix[self.my_image_number][0] == 99:
-            app = Tk()
-            app.title("Please select perceptibility")
-            app.geometry("500x300+200+200")
-            label = Label(app, text="Please select perceptibility before you can continue", height=100, width=100)
-            label.pack()
-            app.mainloop()
+            error_popup("Please select perceptibility", "Please select perceptibility before you can continue")
         elif self.matrix[self.my_image_number][1] == 99:
-            app = Tk()
-            app.title("Please select acceptability")
-            app.geometry("500x300+200+200")
-            label = Label(app, text="Please select acceptability before you can continue", height=100, width=100)
-            label.pack()
-            app.mainloop()
+            error_popup("Please select acceptability", "Please select acceptability before you can continue")
         elif self.matrix[self.my_image_number][2] == 99:
-            app = Tk()
-            app.title("Please select scale")
-            app.geometry("500x300+200+200")
-            label = Label(app, text="Please select an scale before you can continue", height=100, width=100)
-            label.pack()
-            app.mainloop()
-
+            error_popup("Please select scale", "Please select an scale before you can continue")
         else:
             #Raise buttons
             self.button_no_p.config(relief=RAISED)
@@ -456,17 +446,22 @@ class MainWindow():
 
 """ This is going to be used to show the first window, where you can introduce
 the description of the observer"""
-class almacen():
+class optionsSelector():
     def __init__ (self):
         self.entry = Tk()
         self.label1 = Label(self.entry, text="Patient name")
         self.E1 = Entry(self.entry, bd =5)
         self.label1.pack()
         self.E1.pack()
+
+        # Random order of images colors
         self.shuffle = BooleanVar()
-        self.shu_check = Checkbutton(self.entry, text='Random order of images',variable=self.shuffle, 
+        self.shu_check = Checkbutton(self.entry, text='Random order of images/colors',variable=self.shuffle, 
                                      onvalue=True, offvalue=False)
         self.shu_check.pack()
+
+        # Selecting the folder 
+        self.folder_selected = ''
         self.label2 = Label(self.entry, text="Folder containing the images")
         self.folder_name = StringVar()
         self.folder_name.set('')
@@ -475,10 +470,24 @@ class almacen():
         self.label2.pack()
         self.select_folder.pack()
         self.text_folder.pack()
+
+        # Selecting the color file
+        self.file_selected = ''
+        self.color_label = Label(self.entry, text='Select color file (.csv or .xlsx)')
+        self.color_file = StringVar()
+        self.color_file.set('')
+        self.color_text = Label(self.entry, textvariable=self.color_file)
+        self.select_color_file = Button(self.entry, text ="Select file", command = self.selectFolder)
+        self.color_label.pack()
+        self.select_color_file.pack()
+        self.color_text.pack()
+
+        # Other stuff
         self.description = ""
         self.number_of_samples = ""
         self.submit = Button(self.entry, text ="Submit", command = self.getOptions)
         self.submit.pack(side=BOTTOM)
+
     def getOptions(self):
         self.description = self.E1.get()
         self.entry.quit()
@@ -492,8 +501,14 @@ class almacen():
         self.folder_selected = filedialog.askdirectory()
         self.folder_name.set(self.folder_selected)
         self.entry.update_idletasks()
+    def selectFile(self):
+        self.file_selected = filedialog.askopenfilename()
+        self.color_file.set(self.file_selected)
+        self.entry.update_idletasks()
     def getFolder(self):
         return self.folder_selected
+    def getFile(self):
+        return self.file_selected
     def getShuffle(self):
         return self.shuffle.get()
     def quit(self):
@@ -536,21 +551,31 @@ with open("observers.txt") as f:
 	for line in f:
 		observers_names.append(line)
 
-v = almacen()
+v = optionsSelector()
 b = observers_window(observers_names)
 v.main()
 b.main()
 path = v.getFolder()
-number_of_samples = len(glob(path+'/*.png'))
+file = v.getFile()
+if path != '':
+    number_of_samples = len(glob(path+'/*.png'))
+elif file != '':
+    file = readFile()
+    number_of_samples = file.values.shape[0]
+else:
+    error_popup('Path or File Error', 'You must select a path with images or a valid color file (.csv or .xlsx)')
+
 description = v.getDescription()
 shuffle = v.getShuffle()
 number_of_observer = 0
+
 """This is going to check the number of files in the Observers Evaluation folder
 so it can select the number of the next observer"""
 while os.path.exists("ObserversEvaluations/observer"+str(number_of_observer)+".txt"):
     number_of_observer = number_of_observer + 1
 with open("observers.txt", "a") as observers:
     observers.write(description+"\n")
+
 root = Toplevel()
 MainWindow(root,description,number_of_observer,v,number_of_samples,shuffle,path)
 b.quit()
