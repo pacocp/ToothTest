@@ -6,11 +6,6 @@
 # https://github.com/pacocp
 #----------------------------------------------------------------------
 
-#----------------------------------------------------------------------
-# You are going to be able to see the images of the different tooth and
-# answer YES or NO depends on your evaluation of their similarity, and use
-# an scale
-#----------------------------------------------------------------------
 
 from sys import argv
 from sys import platform as _platform
@@ -71,11 +66,12 @@ class MainWindow():
             self.bool_colors = True
         
         self.my_image_number = 0
-
+        self.canvas = Canvas(main, width=self.screen_witdh, height=self.screen_height)
+        self.canvas.grid(row=self.screen_height, column=self.screen_witdh)
+        self.canvas.pack()
         if self.bool_img:
             # canvas for image
-            self.canvas = Canvas(main, width=self.screen_witdh, height=self.screen_height)
-            self.canvas.grid(row=self.screen_height, column=self.screen_witdh)
+            
             self.state = False
             # images
             self.my_images = []
@@ -95,23 +91,27 @@ class MainWindow():
             different values to the self.screen_witdh and self.screen_height """
             self.image_on_canvas = self.canvas.create_image((self.screen_witdh/2)-100, self.screen_height/2, anchor = NW, image = self.my_images[self.my_image_number])
         elif self.bool_colors:
-            self.canvas = Canvas(root, width = 250, height = 250, bg='black')
+            img = PhotoImage(file = r'assets/tooth1.png').subsample(2,2)
+            img2 = PhotoImage(file = r'assets/tooth2.png').subsample(2,2)
 
+            self.color_canvas = Canvas(main, width = img.width()+50, height = img.height()+50, bg='black')
+            width = img.width()+50
+            height = img.height()+50
+            #self.canvas.grid(row=250, column=250)
+            self.color_canvas.pack()
             rgb1 = file.values[self.my_image_number, 0:3]
             rgb2 = file.values[self.my_image_number, 3:]
             hex1 = RGBtoHEX(rgb1[0], rgb1[1], rgb1[2])
             hex2 = RGBtoHEX(rgb2[0], rgb2[1], rgb2[2])
 
-            img = PhotoImage(file = r'assets/tooth1.png')
-            img2 = PhotoImage(file = r'assets/tooth2.png')
-            root.img = img
-            root.img2 = img2
-            self.rec1 = self.canvas.create_rectangle(0, 0, 250/2, 250/2, fill=hex1, outline=hex1)
-            self.rec2 = self.canvas.create_rectangle(250/2, 0, 250, 250/2, fill=hex2, outline=hex2)
-            self.canvas.create_image((250/2)-100,40, anchor=NW, image=img)
-            self.canvas.create_image((250/2),40, anchor=NW, image=img2)
+            main.img = img
+            main.img2 = img2
+            self.rec1 = self.color_canvas.create_rectangle(0, 0, int(height/2), int(height/2), fill=hex1, outline=hex1)
+            self.rec2 = self.color_canvas.create_rectangle(int(width/2), 0, height, int(height/2), fill=hex2, outline=hex2)
+            self.color_canvas.create_image(int(width/2)-50,20, anchor=NW, image=img)
+            self.color_canvas.create_image(int(width/2),20, anchor=NW, image=img2)
 
-            self.canvas.place(x=(self.screen_witdh/2)-100,y=self.screen_height/2)
+            self.color_canvas.place(x=(self.screen_witdh/2)-100,y=self.screen_height/2)
 
         #self.image_on_canvas = self.canvas.create_image((self.screen_witdh/2)-100, self.screen_height/2, anchor = NW, image = self.my_images[self.my_image_number])
         self.texto = self.canvas.create_text(80,50,font=("Purisa", 16),text = "Sample 1")
@@ -251,7 +251,7 @@ class MainWindow():
             self.vector_of_shown_images[self.my_image_number] = 1
             self.my_image_number = self.my_image_number + 1
             # return to first image
-            if self.my_image_number == len(self.my_images)+1:
+            if self.my_image_number == self.number_of_samples+1:
                 self.my_image_number = 0
             if self.vector_of_shown_images[self.my_image_number] == 1:
                 self.canvas.itemconfigure(self.texto, text="Sample "+str(self.my_image_number+1),fill='green')
@@ -267,8 +267,8 @@ class MainWindow():
                 rgb2 = self.file.values[self.my_image_number, 3:]
                 hex1 = RGBtoHEX(rgb1[0], rgb1[1], rgb1[2])
                 hex2 = RGBtoHEX(rgb2[0], rgb2[1], rgb2[2])
-                self.canvas.itemconfig(self.rect1, fill=hex1, outline=hex1)
-                self.canvas.itemconfig(self.rect2, fill=hex2, outline=hex2)
+                self.color_canvas.itemconfig(self.rec1, fill=hex1, outline=hex1)
+                self.color_canvas.itemconfig(self.rec2, fill=hex2, outline=hex2)
                 
     """Implementation of the previuos button to change the sample image"""
     def previousButton(self):
@@ -289,11 +289,10 @@ class MainWindow():
         # next image
         #if self.my_image_number != 0:
         self.my_image_number -= 1
-
-
+        
         # return to last image image
         if self.my_image_number < 0:
-            self.my_image_number = len(self.my_images)
+            self.my_image_number = self.number_of_samples
 
         if self.vector_of_shown_images[self.my_image_number] == 1:
             self.canvas.itemconfigure(self.texto,text="Sample "+str(self.my_image_number+1),fill='green')
@@ -309,8 +308,8 @@ class MainWindow():
                 rgb2 = self.file.values[self.my_image_number, 3:]
                 hex1 = RGBtoHEX(rgb1[0], rgb1[1], rgb1[2])
                 hex2 = RGBtoHEX(rgb2[0], rgb2[1], rgb2[2])
-                self.canvas.itemconfig(self.rect1, fill=hex1, outline=hex1)
-                self.canvas.itemconfig(self.rect2, fill=hex2, outline=hex2)
+                self.color_canvas.itemconfig(self.rec1, fill=hex1, outline=hex1)
+                self.color_canvas.itemconfig(self.rec2, fill=hex2, outline=hex2)
 
         # sunken the buttons previously selected
         # perceptibility
