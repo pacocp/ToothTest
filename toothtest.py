@@ -18,9 +18,10 @@ import subprocess
 import os
 import errno
 from tkinter import *
+from tkinter import filedialog
 from glob import glob
 import random
-from utils import *
+from utils import read_file, RGBtoHEX, error_popup
 
 
 class MainWindow():
@@ -28,7 +29,7 @@ class MainWindow():
     #----------------
 
     def __init__(self, main, description, number_of_observer, v,
-                 number_of_samples, shuffle, path, file):
+                 number_of_samples, shuffle, path, file, file_name):
 
 
         #Initialize attributes
@@ -41,9 +42,11 @@ class MainWindow():
         self.f.write("\n\n")
         self.f.write("\nThe order of the results is as follows: Perceptibility Acceptability Scale\n\n")
         self.number_of_observer = str(number_of_observer)
-        screen_width = main.winfo_screenwidth()
-        screen_height = main.winfo_screenheight()
+        self.screen_witdh = main.winfo_screenwidth()
+        self.screen_height = main.winfo_screenheight()
 
+        self.path = path
+        self.file = file
 
         # Fullscreen
         main.attributes("-fullscreen", True)
@@ -54,17 +57,27 @@ class MainWindow():
             self.list_numbers = list(range(0, number_of_samples))
             random.seed(50)
             self.list_numbers = random.sample(self.list_numbers, len(self.list_numbers))
-         # This is going to be used to show the images that have been showed
+        
+        # This is going to be used to show the images that have been showed
         self.vector_of_shown_images = []
         for i in range(0,number_of_samples):
             self.vector_of_shown_images.append(0)
+        
         if path != '':
+            self.bool_img = True
+            self.bool_colors = False
+        elif file_name != '':
+            self.bool_img = False
+            self.bool_colors = True
+        
+        self.my_image_number = 0
+
+        if self.bool_img:
             # canvas for image
-            self.canvas = Canvas(main, width=screen_width, height=screen_height)
-            self.canvas.grid(row=screen_height, column=screen_width)
+            self.canvas = Canvas(main, width=self.screen_witdh, height=self.screen_height)
+            self.canvas.grid(row=self.screen_height, column=self.screen_witdh)
             self.state = False
             # images
-            self.path = path
             self.my_images = []
             images_list = sorted(glob(path+'/*.png'))
             images_list = Tcl().call('lsort', '-dict', images_list)
@@ -77,17 +90,15 @@ class MainWindow():
             for img in images:
                 self.my_images.append(PhotoImage(file = img))
 
-            self.my_image_number = 0
             # set first image on canvas
             """ You can change the place of the images giving
-            different values to the screen_width and screen_height """
-            self.image_on_canvas = self.canvas.create_image((screen_width/2)-100, screen_height/2, anchor = NW, image = self.my_images[self.my_image_number])
-        elif file != '':
-            canvas = Canvas(root, width = 250, height = 250, bg='black')
+            different values to the self.screen_witdh and self.screen_height """
+            self.image_on_canvas = self.canvas.create_image((self.screen_witdh/2)-100, self.screen_height/2, anchor = NW, image = self.my_images[self.my_image_number])
+        elif self.bool_colors:
+            self.canvas = Canvas(root, width = 250, height = 250, bg='black')
 
-            #canvas.pack()
             rgb1 = file.values[self.my_image_number, 0:3]
-            rgb2 = file.values[self.my_image_number, 3:-1]
+            rgb2 = file.values[self.my_image_number, 3:]
             hex1 = RGBtoHEX(rgb1[0], rgb1[1], rgb1[2])
             hex2 = RGBtoHEX(rgb2[0], rgb2[1], rgb2[2])
 
@@ -95,14 +106,14 @@ class MainWindow():
             img2 = PhotoImage(file = r'assets/tooth2.png')
             root.img = img
             root.img2 = img2
-            canvas.create_rectangle(0, 0, 250/2, 250/2, fill=hex1, outline=hex1)
-            canvas.create_rectangle(250/2, 0, 250, 250/2, fill=hex2, outline=hex2)
-            canvas.create_image((250/2)-100,40, anchor=NW, image=img)
-            canvas.create_image((250/2),40, anchor=NW, image=img2)
+            self.rec1 = self.canvas.create_rectangle(0, 0, 250/2, 250/2, fill=hex1, outline=hex1)
+            self.rec2 = self.canvas.create_rectangle(250/2, 0, 250, 250/2, fill=hex2, outline=hex2)
+            self.canvas.create_image((250/2)-100,40, anchor=NW, image=img)
+            self.canvas.create_image((250/2),40, anchor=NW, image=img2)
 
-            canvas.place(x=(screen_width/2)-100,y=screen_height/2)
+            self.canvas.place(x=(self.screen_witdh/2)-100,y=self.screen_height/2)
 
-        #self.image_on_canvas = self.canvas.create_image((screen_width/2)-100, screen_height/2, anchor = NW, image = self.my_images[self.my_image_number])
+        #self.image_on_canvas = self.canvas.create_image((self.screen_witdh/2)-100, self.screen_height/2, anchor = NW, image = self.my_images[self.my_image_number])
         self.texto = self.canvas.create_text(80,50,font=("Purisa", 16),text = "Sample 1")
 
          # button to close
@@ -113,16 +124,16 @@ class MainWindow():
         # button to change to next image
         self.button_nextimage = Button(main, text="Next Sample", command=self.nextButton)
         """ You can change the place of the button giving
-        different values to the screen_width and screen_height """
+        different values to the self.screen_witdh and self.screen_height """
         #self.button.grid(row=4, column=10,columnspan=2, rowspan=2)
-        self.button_nextimage.place(x=screen_width/2,y=0)
+        self.button_nextimage.place(x=self.screen_witdh/2,y=0)
 
         # button to change to previous image
         self.button_previous = Button(main, text="Previous Sample", command=self.previousButton)
         #self.button.grid(row=4, column=11)
         """ You can change the place of the button giving
-        different values to the screen_width and screen_height """
-        self.button_previous.place(x=(screen_width/2)-150,y=0)
+        different values to the self.screen_witdh and self.screen_height """
+        self.button_previous.place(x=(self.screen_witdh/2)-150,y=0)
 
 
         ###################################################################
@@ -132,23 +143,23 @@ class MainWindow():
         ###################################################################
 
         """ You can change the place of the text giving
-        different values yo the screen_width and screen_height """
-        self.percep = self.canvas.create_text((screen_width/2)+300,60,font=("Purisa", 16),text = "Perceptibility")
+        different values yo the self.screen_witdh and self.screen_height """
+        self.percep = self.canvas.create_text((self.screen_witdh/2)+300,60,font=("Purisa", 16),text = "Perceptibility")
 
 
         # button to say yes
         self.button_yes_p = Button(main, text="YES", command=self.yesButton_P)
         #self.button.grid(row=1, column=10,columnspan=2, rowspan=2)
         """ You can change the place of the button giving
-        different values yo the screen_width and screen_height """
-        self.button_yes_p.place(x=(screen_width/2)+450,y=55)
+        different values yo the self.screen_witdh and self.screen_height """
+        self.button_yes_p.place(x=(self.screen_witdh/2)+450,y=55)
 
         # button to say no
         self.button_no_p = Button(main, text="NO", command=self.noButton_P)
         #self.button.grid(row=1, column=11,columnspan=2, rowspan=2)
         """ You can change the place of the button giving
-        different values yo the screen_width and screen_height """
-        self.button_no_p.place(x=(screen_width/2)+550,y=55)
+        different values yo the self.screen_witdh and self.screen_height """
+        self.button_no_p.place(x=(self.screen_witdh/2)+550,y=55)
 
         ###################################################################
         #
@@ -157,23 +168,23 @@ class MainWindow():
         ###################################################################
 
         """ You can change the place of the text giving
-        different values yo the screen_width and screen_height """
-        self.percep = self.canvas.create_text((screen_width/2)+300,115,font=("Purisa", 16),text = "Acceptability")
+        different values yo the self.screen_witdh and self.screen_height """
+        self.percep = self.canvas.create_text((self.screen_witdh/2)+300,115,font=("Purisa", 16),text = "Acceptability")
 
 
         # button to say yes
         self.button_yes_ac = Button(main, text="YES", command=self.yesButton_AC)
         #self.button.grid(row=1, column=10,columnspan=2, rowspan=2)
         """ You can change the place of the button giving
-        different values yo the screen_width and screen_height """
-        self.button_yes_ac.place(x=(screen_width/2)+450,y=100)
+        different values yo the self.screen_witdh and self.screen_height """
+        self.button_yes_ac.place(x=(self.screen_witdh/2)+450,y=100)
 
         # button to say no
         self.button_no_ac = Button(main, text="NO", command=self.noButton_AC)
         #self.button.grid(row=1, column=11,columnspan=2, rowspan=2)
         """ You can change the place of the button giving
-        different values yo the screen_width and screen_height """
-        self.button_no_ac.place(x=(screen_width/2)+550,y=100)
+        different values yo the self.screen_witdh and self.screen_height """
+        self.button_no_ac.place(x=(self.screen_witdh/2)+550,y=100)
 
         ###################################################################
         #
@@ -181,34 +192,34 @@ class MainWindow():
         #
         ###################################################################
         """ You can change the place of the text giving
-        different values yo the screen_width and screen_height """
-        self.percep = self.canvas.create_text((screen_width/2)+300,170,font=("Purisa", 16),text = "Scale")
+        different values yo the self.screen_witdh and self.screen_height """
+        self.percep = self.canvas.create_text((self.screen_witdh/2)+300,170,font=("Purisa", 16),text = "Scale")
 
         """ You can change the place of the buttons giving
-        different values yo the screen_width and screen_height """
+        different values yo the self.screen_witdh and self.screen_height """
         # button scale 0
         self.button_scale_0 = Button(main, text="0", command=self.scale_0)
-        self.button_scale_0.place(x=(screen_width/2)+450,y=150)
+        self.button_scale_0.place(x=(self.screen_witdh/2)+450,y=150)
 
         # button scale 1
         self.button_scale_1 = Button(main, text="1", command=self.scale_1)
-        self.button_scale_1.place(x=(screen_width/2)+500,y=150)
+        self.button_scale_1.place(x=(self.screen_witdh/2)+500,y=150)
 
         # button scale 2
         self.button_scale_2 = Button(main, text="2", command=self.scale_2)
-        self.button_scale_2.place(x=(screen_width/2)+550,y=150)
+        self.button_scale_2.place(x=(self.screen_witdh/2)+550,y=150)
 
         # button scale 3
         self.button_scale_3 = Button(main, text="3", command=self.scale_3)
-        self.button_scale_3.place(x=(screen_width/2)+600,y=150)
+        self.button_scale_3.place(x=(self.screen_witdh/2)+600,y=150)
 
         # button scale 4
         self.button_scale_4 = Button(main, text="4", command=self.scale_4)
-        self.button_scale_4.place(x=(screen_width/2)+650,y=150)
+        self.button_scale_4.place(x=(self.screen_witdh/2)+650,y=150)
 
         # button scale 5
         self.button_scale_5 = Button(main, text="5", command=self.scale_5)
-        self.button_scale_5.place(x=(screen_width/2)+700,y=150)
+        self.button_scale_5.place(x=(self.screen_witdh/2)+700,y=150)
 
 
 
@@ -246,10 +257,19 @@ class MainWindow():
                 self.canvas.itemconfigure(self.texto, text="Sample "+str(self.my_image_number+1),fill='green')
             else:
                 self.canvas.itemconfigure(self.texto,text="Sample "+str(self.my_image_number+1),fill='black')
+            
             # change image
-            self.canvas.itemconfig(self.image_on_canvas, image = self.my_images[self.my_image_number])
+            if self.bool_img:
+                self.canvas.itemconfig(self.image_on_canvas, image = self.my_images[self.my_image_number])
+            elif self.bool_colors:
 
-
+                rgb1 = self.file.values[self.my_image_number, 0:3]
+                rgb2 = self.file.values[self.my_image_number, 3:]
+                hex1 = RGBtoHEX(rgb1[0], rgb1[1], rgb1[2])
+                hex2 = RGBtoHEX(rgb2[0], rgb2[1], rgb2[2])
+                self.canvas.itemconfig(self.rect1, fill=hex1, outline=hex1)
+                self.canvas.itemconfig(self.rect2, fill=hex2, outline=hex2)
+                
     """Implementation of the previuos button to change the sample image"""
     def previousButton(self):
         #Raise buttons
@@ -281,7 +301,16 @@ class MainWindow():
             self.canvas.itemconfigure(self.texto,text='Sample '+str(self.my_image_number+1),fill='black')
 
         # change image
-        self.canvas.itemconfig(self.image_on_canvas, image = self.my_images[self.my_image_number])
+        # change image
+            if self.bool_img:
+                self.canvas.itemconfig(self.image_on_canvas, image = self.my_images[self.my_image_number])
+            elif self.bool_colors:
+                rgb1 = self.file.values[self.my_image_number, 0:3]
+                rgb2 = self.file.values[self.my_image_number, 3:]
+                hex1 = RGBtoHEX(rgb1[0], rgb1[1], rgb1[2])
+                hex2 = RGBtoHEX(rgb2[0], rgb2[1], rgb2[2])
+                self.canvas.itemconfig(self.rect1, fill=hex1, outline=hex1)
+                self.canvas.itemconfig(self.rect2, fill=hex2, outline=hex2)
 
         # sunken the buttons previously selected
         # perceptibility
@@ -477,7 +506,7 @@ class optionsSelector():
         self.color_file = StringVar()
         self.color_file.set('')
         self.color_text = Label(self.entry, textvariable=self.color_file)
-        self.select_color_file = Button(self.entry, text ="Select file", command = self.selectFolder)
+        self.select_color_file = Button(self.entry, text ="Select file", command = self.selectFile)
         self.color_label.pack()
         self.select_color_file.pack()
         self.color_text.pack()
@@ -556,11 +585,11 @@ b = observers_window(observers_names)
 v.main()
 b.main()
 path = v.getFolder()
-file = v.getFile()
+file_name = v.getFile()
 if path != '':
     number_of_samples = len(glob(path+'/*.png'))
-elif file != '':
-    file = readFile()
+elif file_name != '':
+    file = read_file(file_name)
     number_of_samples = file.values.shape[0]
 else:
     error_popup('Path or File Error', 'You must select a path with images or a valid color file (.csv or .xlsx)')
@@ -577,6 +606,6 @@ with open("observers.txt", "a") as observers:
     observers.write(description+"\n")
 
 root = Toplevel()
-MainWindow(root,description,number_of_observer,v,number_of_samples,shuffle,path)
+MainWindow(root,description,number_of_observer,v,number_of_samples,shuffle,path,file,file_name)
 b.quit()
 root.mainloop()
