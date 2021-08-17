@@ -2,18 +2,16 @@
 # -*- coding:utf-8 -*-
 
 #----------------------------------------------------------------------
-# Francisco Carrillo Pérez <carrilloperezfrancisco@gmail.com>
+# Francisco Carrillo Pérez <franciscocp@ugr.es>
 # https://github.com/pacocp
 #----------------------------------------------------------------------
 
-
-from sys import argv
 from sys import platform as _platform
-import subprocess
 import os
 import errno
-from tkinter import *
-from tkinter import filedialog
+from tkinter import (Tk, Label, Entry, PhotoImage, Canvas, Tcl, NW, Button, RAISED,
+                     SUNKEN, BooleanVar, StringVar, Checkbutton, END, BOTTOM, Toplevel,
+                     filedialog, font)
 from glob import glob
 import random
 from utils import read_file, RGBtoHEX, error_popup
@@ -23,39 +21,42 @@ class MainWindow():
 
     #----------------
 
-    def __init__(self, main, description, number_of_observer, v,
-                 number_of_samples, shuffle, path, file, file_name):
+    def __init__(self, main, options): 
 
 
         #Initialize attributes
-        self.v = v
+        self.v = options['v']
         self.matrix = []
-        for i in range(0,number_of_samples):
+        for i in range(0,options['number_of_samples']):
             self.matrix.append([99,99,99])
-        self.f = open("ObserversEvaluations/observer"+str(number_of_observer)+".txt",'w+')
-        self.f.write(description)
+        self.f = open("ObserversEvaluations/observer"+str(options['number_of_observer'])+".txt",'w+')
+        self.f.write(options['description'])
         self.f.write("\n\n")
         self.f.write("\nThe order of the results is as follows: Perceptibility Acceptability Scale\n\n")
-        self.number_of_observer = str(number_of_observer)
+        self.number_of_observer = str(options['number_of_observer'])
         self.screen_witdh = main.winfo_screenwidth()
         self.screen_height = main.winfo_screenheight()
 
-        self.path = path
-        self.file = file
+        self.path = options['path']
+        self.file = options['file']
 
+        self.defaultfont = font.nametofont('TkDefaultFont')
+        self.defaultfont.configure(family='Arial',
+                                   size=10,
+                                   weight=font.BOLD)
         # Fullscreen
         main.attributes("-fullscreen", True)
 
-        self.shuffle = shuffle
-        self.number_of_samples = number_of_samples
+        self.shuffle = options['shuffle']
+        self.number_of_samples = options['number_of_samples']
         if shuffle:
-            self.list_numbers = list(range(0, number_of_samples))
+            self.list_numbers = list(range(0, self.number_of_samples))
             random.seed(50)
             self.list_numbers = random.sample(self.list_numbers, len(self.list_numbers))
         
         # This is going to be used to show the images that have been showed
         self.vector_of_shown_images = []
-        for i in range(0,number_of_samples):
+        for i in range(0,self.number_of_samples):
             self.vector_of_shown_images.append(0)
         
         if path != '':
@@ -91,10 +92,14 @@ class MainWindow():
             different values to the self.screen_witdh and self.screen_height """
             self.image_on_canvas = self.canvas.create_image((self.screen_witdh/2)-100, self.screen_height/2, anchor = NW, image = self.my_images[self.my_image_number])
         elif self.bool_colors:
+
+            if self.shuffle:
+                self.file = self.file[self.list_numbers,:]
+            
             img = PhotoImage(file = r'assets/tooth1.png').subsample(2,2)
             img2 = PhotoImage(file = r'assets/tooth2.png').subsample(2,2)
 
-            self.color_canvas = Canvas(main, width = img.width()+50, height = img.height()+50, bg='black')
+            self.color_canvas = Canvas(main, width = img.width()+50, height = img.height()+50, bg=options['bg_tcolor'])
             width = img.width()+50
             height = img.height()+50
             #self.canvas.grid(row=250, column=250)
@@ -263,8 +268,8 @@ class MainWindow():
                 self.canvas.itemconfig(self.image_on_canvas, image = self.my_images[self.my_image_number])
             elif self.bool_colors:
 
-                rgb1 = self.file.values[self.my_image_number, 0:3]
-                rgb2 = self.file.values[self.my_image_number, 3:]
+                rgb1 = self.file[self.my_image_number, 0:3]
+                rgb2 = self.file[self.my_image_number, 3:]
                 hex1 = RGBtoHEX(rgb1[0], rgb1[1], rgb1[2])
                 hex2 = RGBtoHEX(rgb2[0], rgb2[1], rgb2[2])
                 self.color_canvas.itemconfig(self.rec1, fill=hex1, outline=hex1)
@@ -304,8 +309,8 @@ class MainWindow():
             if self.bool_img:
                 self.canvas.itemconfig(self.image_on_canvas, image = self.my_images[self.my_image_number])
             elif self.bool_colors:
-                rgb1 = self.file.values[self.my_image_number, 0:3]
-                rgb2 = self.file.values[self.my_image_number, 3:]
+                rgb1 = self.file[self.my_image_number, 0:3]
+                rgb2 = self.file[self.my_image_number, 3:]
                 hex1 = RGBtoHEX(rgb1[0], rgb1[1], rgb1[2])
                 hex2 = RGBtoHEX(rgb2[0], rgb2[1], rgb2[2])
                 self.color_canvas.itemconfig(self.rec1, fill=hex1, outline=hex1)
@@ -509,7 +514,7 @@ class optionsSelector():
         self.color_label.pack()
         self.select_color_file.pack()
         self.color_text.pack()
-
+        
         # Other stuff
         self.description = ""
         self.number_of_samples = ""
@@ -533,6 +538,15 @@ class optionsSelector():
         self.file_selected = filedialog.askopenfilename()
         self.color_file.set(self.file_selected)
         self.entry.update_idletasks()
+        # if the file has been selected you must select
+        # the background color for the teeth
+        self.bg_tlabel = Label(self.entry, text="RGB for teeth background (e.g. 255,255,255)")
+        self.bg_tcolor_entry = Entry(self.entry, bd =5)
+        self.bg_tlabel.pack()
+        self.bg_tcolor_entry.insert(END, "255,255,255")
+        self.bg_tcolor_entry.pack()
+    def getBGTColor(self):
+        return self.bg_tcolor_entry.get()
     def getFolder(self):
         return self.folder_selected
     def getFile(self):
@@ -590,6 +604,8 @@ if path != '':
 elif file_name != '':
     file = read_file(file_name)
     number_of_samples = file.values.shape[0]
+    bg_tcolor = v.getBGTColor().split(',')
+    bg_tcolor = RGBtoHEX(int(bg_tcolor[0]), int(bg_tcolor[1]), int(bg_tcolor[2]))
 else:
     error_popup('Path or File Error', 'You must select a path with images or a valid color file (.csv or .xlsx)')
 
@@ -605,6 +621,16 @@ with open("observers.txt", "a") as observers:
     observers.write(description+"\n")
 
 root = Toplevel()
-MainWindow(root,description,number_of_observer,v,number_of_samples,shuffle,path,file,file_name)
+options = {
+    'description': description,
+    'number_of_observer': number_of_observer,
+    'v': v,
+    'number_of_samples': number_of_samples,
+    'shuffle': shuffle,
+    'path': path,
+    'file': file.values,
+    'bg_tcolor': bg_tcolor
+}
+MainWindow(root,options)
 b.quit()
 root.mainloop()
