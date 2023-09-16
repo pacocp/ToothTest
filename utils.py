@@ -1,9 +1,9 @@
 import pandas as pd
 from tkinter import Tk, Label
 
-
 def read_file(file_name):
     extension = file_name.split('.')[-1]
+    data = []
     if extension == 'csv':
         data = pd.read_csv(file_name)
     elif extension == 'xlsx':

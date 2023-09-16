@@ -15,7 +15,7 @@ from tkinter import (Tk, Label, Entry, PhotoImage, Canvas, Tcl, NW, Button, RAIS
 from glob import glob
 import random
 from utils import read_file, RGBtoHEX, error_popup
-
+import csv
 
 class MainWindow():
 
@@ -29,10 +29,13 @@ class MainWindow():
         self.matrix = []
         for i in range(0,options['number_of_samples']):
             self.matrix.append([99,99,99])
-        self.f = open("ObserversEvaluations/observer"+str(options['number_of_observer'])+".txt",'w+')
-        self.f.write(options['description'])
-        self.f.write("\n\n")
-        self.f.write("\nThe order of the results is as follows: Perceptibility Acceptability Scale\n\n")
+
+        # check if the name already exists for that observer
+        existing_obs = glob(f"ObserversEvaluations/{options['description']}*")
+        if len(existing_obs) > 0:
+            self.f = open(f"ObserversEvaluations/{options['description']}_{len(existing_obs)+1}.csv", "w+", newline='')
+        else:
+            self.f = open(f"ObserversEvaluations/{options['description']}.csv", "w+", newline='')    
         self.number_of_observer = str(options['number_of_observer'])
         self.screen_witdh = main.winfo_screenwidth()
         self.screen_height = main.winfo_screenheight()
@@ -52,7 +55,7 @@ class MainWindow():
         if shuffle:
             self.list_numbers = list(range(0, self.number_of_samples))
             random.seed(50)
-            self.list_numbers = random.sample(self.list_numbers, len(self.list_numbers))
+            random.shuffle(self.list_numbers)
         
         # This is going to be used to show the images that have been showed
         self.vector_of_shown_images = []
@@ -256,7 +259,7 @@ class MainWindow():
             self.vector_of_shown_images[self.my_image_number] = 1
             self.my_image_number = self.my_image_number + 1
             # return to first image
-            if self.my_image_number == self.number_of_samples+1:
+            if self.my_image_number == self.number_of_samples:
                 self.my_image_number = 0
             if self.vector_of_shown_images[self.my_image_number] == 1:
                 self.canvas.itemconfigure(self.texto, text="Sample "+str(self.my_image_number+1),fill='green')
@@ -394,8 +397,12 @@ class MainWindow():
         if self.shuffle:
             self.matrix = [self.matrix[i] for i in self.list_numbers]
         
-        for i in range(0,len(self.matrix)):
-            self.f.write(str(self.matrix[i][0])+" "+str(self.matrix[i][1])+" "+str(self.matrix[i][2])+"\n")
+        csv_writer = csv.writer(self.f)
+        csv_writer.writerow(['Perceptibility', 'Acceptability', 'Scale'])
+
+        for row in self.matrix:
+            csv_writer.writerow(row)
+
         self.f.close()
         self.v.quit()
 
