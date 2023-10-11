@@ -16,6 +16,7 @@ from glob import glob
 import random
 from utils import read_file, RGBtoHEX, error_popup
 import csv
+from PIL import ImageTk
 
 class MainWindow():
 
@@ -52,7 +53,7 @@ class MainWindow():
 
         self.shuffle = options['shuffle']
         self.number_of_samples = options['number_of_samples']
-        if shuffle:
+        if self.shuffle:
             self.list_numbers = list(range(0, self.number_of_samples))
             random.seed(50)
             random.shuffle(self.list_numbers)
@@ -79,16 +80,16 @@ class MainWindow():
             self.state = False
             # images
             self.my_images = []
-            images_list = sorted(glob(path+'/*.png'))
+            images_list = sorted(glob(path+'/*.jpg'))
             images_list = Tcl().call('lsort', '-dict', images_list)
             
-            if shuffle:
+            if self.shuffle:
                 images = [images_list[i] for i in self.list_numbers]
             else:
                 images = images_list
 
             for img in images:
-                self.my_images.append(PhotoImage(file = img))
+                self.my_images.append(ImageTk.PhotoImage(file = img))
 
             # set first image on canvas
             """ You can change the place of the images giving
@@ -395,7 +396,13 @@ class MainWindow():
         """Writes the results in a file"""
         # if there is a shuffle, reorder the samples for the files
         if self.shuffle:
-            self.matrix = [self.matrix[i] for i in self.list_numbers]
+            new_matrix = []
+            for i in range(0,len(self.list_numbers)):
+                new_matrix.append([99,99,99])
+            i = 0
+            for or_idx, idx in enumerate(self.list_numbers):
+                new_matrix[idx] = self.matrix[or_idx]
+            self.matrix = new_matrix
         
         csv_writer = csv.writer(self.f)
         csv_writer.writerow(['Perceptibility', 'Acceptability', 'Scale'])
@@ -607,7 +614,7 @@ b.main()
 path = v.getFolder()
 file_name = v.getFile()
 if path != '':
-    number_of_samples = len(glob(path+'/*.png'))
+    number_of_samples = len(glob(path+'/*.jpg'))
     values = None
     bg_tcolor=None
 elif file_name != '':
