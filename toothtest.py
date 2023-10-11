@@ -608,11 +608,14 @@ path = v.getFolder()
 file_name = v.getFile()
 if path != '':
     number_of_samples = len(glob(path+'/*.png'))
+    values = None
+    bg_tcolor=None
 elif file_name != '':
     file = read_file(file_name)
     number_of_samples = file.values.shape[0]
     bg_tcolor = v.getBGTColor().split(',')
     bg_tcolor = RGBtoHEX(int(bg_tcolor[0]), int(bg_tcolor[1]), int(bg_tcolor[2]))
+    values = file.values
 else:
     error_popup('Path or File Error', 'You must select a path with images or a valid color file (.csv or .xlsx)')
 
@@ -635,7 +638,7 @@ options = {
     'number_of_samples': number_of_samples,
     'shuffle': shuffle,
     'path': path,
-    'file': file.values,
+    'file': values,
     'bg_tcolor': bg_tcolor
 }
 MainWindow(root,options)
